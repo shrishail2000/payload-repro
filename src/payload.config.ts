@@ -9,6 +9,8 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { gcsStorage } from '@payloadcms/storage-gcs'
+import AuthCredentials from '../gcs-uploads.json'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -33,5 +35,17 @@ export default buildConfig({
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
+    gcsStorage({
+      collections: {
+        media: true,
+      },
+      enabled: true,
+      bucket: process.env.GCS_BUCKET || '',
+      options: {
+        apiEndpoint: process.env.GCS_ENDPOINT || '',
+        projectId: process.env.GCS_PROJECT_ID || '',
+        credentials: AuthCredentials,
+      },
+    }),
   ],
 })
